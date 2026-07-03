@@ -1,3 +1,53 @@
+Your list is mostly correct, but a few commands need correction or clarification.
+
+Command	Purpose	Notes
+docker ps -a	List all containers (running and stopped)	✅ Correct. docker ps alone shows only running containers.
+docker rm <container_id>	Remove a stopped container	✅ If the container is running, stop it first or use docker rm -f.
+docker run <image_name>	Create and start a container from an image	✅ This is the most commonly used command.
+docker rmi <image_id>	Remove an image	✅ Cannot remove an image if any container (running or stopped) uses it. Remove the container(s) first or force with -f.
+docker images	List downloaded images	✅ Correct.
+docker start <container_name>	Start an existing stopped container	✅ Correct.
+docker create <image_name>	Create a container without starting it	❌ It does not simply pull the image. If the image isn't available locally, Docker may pull it first, then create the container.
+docker search <image_name>	Search Docker Hub for images	✅ Spelling is search, not searh.
+docker pull <image_name>	Download an image from a registry	✅ Correct. Example: docker pull ubuntu:22.04
+docker stop <container_name>	Stop a running container	✅ Correct.
+Useful relationship between these commands
+
+Download only
+
+docker pull nginx
+
+Create container only (not running)
+
+docker create nginx
+
+Start the created container
+
+docker start <container_id>
+
+Create and start in one command
+
+docker run nginx
+Common interview flow
+docker search nginx      # Search Docker Hub
+docker pull nginx        # Download image
+docker images            # Verify image
+
+docker run nginx         # Create and start container
+docker ps                # Running containers
+docker ps -a             # All containers
+
+docker stop <container>  # Stop container
+docker start <container> # Restart container
+
+docker rm <container>    # Remove container
+docker rmi <image>       # Remove image
+
+The main distinction interviewers often ask about is:
+
+docker pull → downloads an image.
+docker create → creates a container but does not start it.
+docker run → creates a container (if needed) and starts it immediately
 Think of Docker as managing images (blueprints) and containers (running instances).
 
 Step 1: Search for an image
