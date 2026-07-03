@@ -1,0 +1,378 @@
+Think of Docker as managing images (blueprints) and containers (running instances).
+
+Step 1: Search for an image
+
+You want to run Nginx but don't know the exact image name.
+
+docker search nginx
+
+Story: "Is there an Nginx image available on Docker Hub?"
+
+Step 2: Download the image
+docker pull nginx
+
+Story: "Download the Nginx blueprint (image) to my computer."
+
+Step 3: Check downloaded images
+docker images
+
+Story: "Show me all the blueprints I have."
+
+Output might show:
+
+REPOSITORY   TAG     IMAGE ID
+nginx        latest  abc123
+ubuntu       latest  xyz456
+Step 4: Create and start a container
+
+Most people use:
+
+docker run nginx
+
+Story: "Take the Nginx blueprint, create a container from it, and start it."
+
+Docker internally does something like:
+
+Image
+   ↓
+Create Container
+   ↓
+Start Container
+Step 5: See running containers
+docker ps
+
+Story: "Which containers are currently running?"
+
+Step 6: See all containers
+docker ps -a
+
+Story: "Show both running and stopped containers."
+
+Example:
+
+nginx1   Running
+ubuntu1  Exited
+Step 7: Stop a container
+docker stop nginx1
+
+Story: "Stop the Nginx container."
+
+The container still exists—it just isn't running.
+
+Step 8: Start it again
+docker start nginx1
+
+Story: "Start the same container again."
+
+Step 9 (Optional): Create without starting
+
+Instead of docker run, suppose you only want to prepare the container.
+
+docker create nginx
+
+Story: "Create the container, but don't start it yet."
+
+Later:
+
+docker start <container_id>
+
+This is equivalent to:
+
+docker create nginx
+docker start <container_id>
+
+whereas
+
+docker run nginx
+
+does both steps automatically.
+
+Step 10: Remove the container
+
+First stop it:
+
+docker stop nginx1
+
+Then remove it:
+
+docker rm nginx1
+
+Story: "I'm done with this container. Delete it."
+
+Step 11: Remove the image
+
+Once no containers are using the image:
+
+docker rmi nginx
+
+Story: "Delete the blueprint too."
+
+If any container (running or stopped) still uses the image, Docker will refuse to remove it.
+
+Complete story
+docker search nginx
+        ↓
+docker pull nginx
+        ↓
+docker images
+        ↓
+docker run nginx
+        ↓
+docker ps
+        ↓
+docker stop <container>
+        ↓
+docker start <container>
+        ↓
+docker stop <container>
+        ↓
+docker rm <container>
+        ↓
+docker rmi nginx
+Remember the difference
+docker pull → Download an image.
+docker create → Create a container but don't start it.
+docker run → Create and start a container (and pull the image first if it's not already available locally).
+
+
+
+                                           This is one of the most confusing parts of Docker at first. The key is understanding what each one contains.
+
+Let's use a school project analogy.
+
+Suppose you've written a Java application.
+
+1. Sharing only your code 📄
+
+You zip your project and send it to your friend.
+
+BankApp/
+    src/
+    pom.xml
+
+Your friend now has your code.
+
+But they still need to figure out:
+
+Which operating system?
+Which JDK version?
+Maven or Gradle?
+Environment variables?
+Database?
+Any other software?
+
+So they ask:
+
+"How do I run this?"
+
+You reply with instructions.
+
+2. Dockerfile 📝
+
+A Dockerfile is NOT the application.
+
+It is NOT the image.
+
+It is simply a recipe for building an image.
+
+Example:
+
+FROM ubuntu
+
+RUN apt install openjdk-21
+
+COPY . /app
+
+WORKDIR /app
+
+RUN mvn package
+
+CMD ["java","-jar","bank.jar"]
+
+Read it like this:
+
+Start with Ubuntu.
+
+Install Java.
+
+Copy my code.
+
+Compile it.
+
+When someone starts this image, run my application.
+
+Notice something?
+
+The Dockerfile does not contain Java.
+
+It doesn't contain Ubuntu.
+
+It doesn't contain your dependencies.
+
+It just says how to get them.
+
+Think of it as a cooking recipe.
+
+Recipe:
+
+Take flour.
+Add eggs.
+Bake for 30 minutes.
+
+The recipe doesn't contain flour or eggs.
+
+3. Docker Image 📦
+
+Now Docker reads the Dockerfile and performs every step.
+
+FROM ubuntu
+↓
+Download Ubuntu
+
+Install Java
+↓
+Java installed
+
+Copy code
+↓
+Code copied
+
+Build project
+↓
+JAR created
+
+After everything finishes...
+
+Docker creates an image.
+
+This image actually contains:
+
+Ubuntu
+Java
+Libraries
+Your JAR
+Configuration
+Everything needed
+
+Think of it as a sealed lunch box.
+
+Everything is already inside.
+
+No cooking required anymore.
+
+4. Container 🚀
+
+Now you say
+
+docker run bank-image
+
+Docker opens the lunch box.
+
+Your application starts running.
+
+That running application is the container.
+
+Think of it like this:
+
+Image
+     ↓
+Run
+     ↓
+Container
+Real-life analogy
+
+Imagine you're making instant noodles.
+
+Code
+Ingredients list
+
+Not enough to make noodles.
+
+Dockerfile
+Boil water.
+
+Add noodles.
+
+Cook for 2 minutes.
+
+Recipe only.
+
+Image
+Ready-to-cook noodle kit.
+
+Contains:
+✔ noodles
+✔ seasoning
+✔ bowl
+
+Everything packed.
+
+Container
+
+You pour hot water.
+
+Now you're actually eating the noodles.
+
+The container is the meal you're eating.
+
+Why not just share the Dockerfile?
+
+Excellent question.
+
+Suppose your Dockerfile says
+
+FROM ubuntu
+
+Your friend builds it tomorrow.
+
+Ubuntu may have changed.
+
+Maybe Java version changed.
+
+Maybe Maven downloads a newer dependency.
+
+So the resulting image might not be exactly the same.
+
+An image avoids that uncertainty because it's already been built.
+
+Then why share Dockerfiles at all?
+
+Because developers usually share both:
+
+Project
+│
+├── source code
+├── Dockerfile
+└── README
+
+The Dockerfile lets anyone rebuild the image if needed.
+
+But when deploying to production, teams often share the image, because it has already been built and tested.
+
+The complete picture
+Your Java code
+        │
+        ▼
+Dockerfile
+(Instructions to build)
+        │
+        ▼
+docker build
+        │
+        ▼
+Docker Image
+(Packaged application + OS + Java + dependencies)
+        │
+        ▼
+docker run
+        │
+        ▼
+Docker Container
+(Running application)
+The one sentence that usually makes it click
+Code = "Here's my project."
+Dockerfile = "Here's how to package and run my project."
+Docker Image = "Here's the packaged project, ready to use."
+Docker Container = "Here's the packaged project currently running."
+
+The Dockerfile is similar to sharing code plus instructions, but it's more powerful because it's machine-readable. Instead of a human following a README ("Install Java 21, then Maven, then..."), Docker itself executes the instructions and produces the same packaged image every time.
