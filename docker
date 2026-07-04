@@ -426,3 +426,8 @@ Docker Image = "Here's the packaged project, ready to use."
 Docker Container = "Here's the packaged project currently running."
 
 The Dockerfile is similar to sharing code plus instructions, but it's more powerful because it's machine-readable. Instead of a human following a README ("Install Java 21, then Maven, then..."), Docker itself executes the instructions and produces the same packaged image every time.
+
+
+get JDK:docker run -dit openjdk:22-jdk
+copy jar into container:docker cp target/rest-demo.jar bold_kilby:/temp
+create image-docker commit --chnage='CMD ["jave","-jar","/temp/rest-demo.jar"]' bold_kilby telusko/rest-demo:v2
