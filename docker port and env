@@ -1,0 +1,3 @@
+docker run --name custom_name -p port_onsystem:port_of_container container name  --run with name custom and map port on local to port of container mentioned
+  docker exec container_name env-gives names of environmental variable
+  docker run -e variable=value container_namee
