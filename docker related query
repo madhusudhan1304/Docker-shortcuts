@@ -1,0 +1,5 @@
+Create a container from an image	docker create <image>
+Create and start a container from an image	docker run <image>
+Start an existing container	docker start <container>
+Stop an existing container	docker stop <container>
+create works with image,run with image, start with container
